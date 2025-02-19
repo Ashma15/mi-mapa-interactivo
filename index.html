@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html>
+		<!DOCTYPE html>
+<html lang="es">
 <head>
-  <title>Mapa Interactivo en Bogotá con Marcadores de Corazón</title>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Interactivo en Bogotá</title>
+  
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- Leaflet JS -->
@@ -14,15 +15,41 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
     #map {
       height: 500px;
       width: 100%;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
 <body>
 
-  <div id="map"></div>
+  <div class="container">
+    <h1>Mapa Interactivo en Bogotá</h1>
+    <div id="map"></div>
+  </div>
 
   <script>
     // Crear el mapa centrado en Bogotá
@@ -58,77 +85,16 @@
       }
     }).addTo(map);
 
-    // Cargar marcadores guardados desde localStorage
-    var savedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
-
-    savedMarkers.forEach(function(markerData) {
-      var marker = L.marker([markerData.lat, markerData.lng], {
-        icon: L.icon({
-          iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Heart_icon_%28colored%29.svg', // Marcador de corazón
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -32],
-          shadowSize: [0, 0]
-        })
-      }).addTo(map);
-      marker.bindPopup("<b>" + markerData.note.title + "</b><br>" + markerData.note.content + "<br><button onclick='deleteMarker(" + markerData.lat + "," + markerData.lng + ")'>Eliminar Marcador</button>");
-    });
-
-    // Función para agregar un marcador con nota
+    // Función para agregar marcadores (puedes personalizarla si lo deseas)
     map.on('click', function(e) {
       var lat = e.latlng.lat;
       var lng = e.latlng.lng;
 
-      // Asegurarse de que el clic esté dentro de Bogotá
-      if (map.getBounds().contains([lat, lng])) {
-        // Preguntar al usuario por la nota
-        var noteTitle = prompt("Título de la nota:");
-        var noteContent = prompt("Contenido de la nota:");
-
-        if (noteTitle && noteContent) {
-          // Crear el marcador con el icono de corazón
-          var marker = L.marker([lat, lng], {
-            icon: L.icon({
-              iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Heart_icon_%28colored%29.svg',  // Marcador morado
-              iconSize: [32, 32],
-              iconAnchor: [16, 32],
-              popupAnchor: [0, -32],
-              shadowSize: [0, 0]
-            })
-          }).addTo(map);
-
-          marker.bindPopup("<b>" + noteTitle + "</b><br>" + noteContent + "<br><button onclick='deleteMarker(" + lat + "," + lng + ")'>Eliminar Marcador</button>");
-
-          // Guardar el marcador y la nota en localStorage
-          savedMarkers.push({
-            lat: lat,
-            lng: lng,
-            note: {
-              title: noteTitle,
-              content: noteContent
-            }
-          });
-
-          localStorage.setItem('markers', JSON.stringify(savedMarkers));
-        }
-      } else {
-        alert("El marcador debe estar dentro de Bogotá.");
-      }
+      var marker = L.marker([lat, lng]).addTo(map);
+      marker.bindPopup("Marcador en: " + lat.toFixed(4) + ", " + lng.toFixed(4));
     });
-
-    // Función para eliminar un marcador
-    function deleteMarker(lat, lng) {
-      // Filtrar los marcadores guardados para eliminar el que se ha seleccionado
-      savedMarkers = savedMarkers.filter(function(markerData) {
-        return markerData.lat !== lat || markerData.lng !== lng;
-      });
-
-      // Eliminar el marcador del mapa y actualizar el localStorage
-      localStorage.setItem('markers', JSON.stringify(savedMarkers));
-      location.reload();  // Recargar la página para actualizar el mapa
-    }
   </script>
 
 </body>
-</html>
+</html>		
          
